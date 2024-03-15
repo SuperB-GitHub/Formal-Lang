@@ -31,6 +31,7 @@ def Check(Pravila:dict,TN:list):
     T=TN[0]
     N=TN[1]
     TN=T+N
+    TN.append('e')
     typ=[]
 
     for key in Pravila.keys():
@@ -38,7 +39,7 @@ def Check(Pravila:dict,TN:list):
             if key in N and ((el[-1] in T and el[0] in N)  or (el[0] in T and el[-1] in N)):
                 typ.append(3)
                 break
-            elif key in N:
+            elif key in T:
                 for el_p in el:
                     if el_p in TN:
                         typ.append(2)
@@ -53,9 +54,34 @@ def Exist(Pravila:dict,TN:list):
     T=TN[0]
     N=TN[1]
     for key in Pravila.keys():
+        if key == TN[2]:continue
+        check=[]
         for el in Pravila[key]:
-            if any(symb in el for symb in N)!=True:
-                return f'не существует в правиле {key} в месте {el}'
+            check.append(any(symb in el for symb in N))
+        if True in check: 
+            continue
+        else: return 'Язык не существует'
+    return 'Язык существует'
+
+def UnusualSumb(Pravila:dict,TN:list):
+    T=TN[0]
+    N=TN[1]
+    for key in Pravila.keys():
+        if key == TN[2]:continue
+        sumbprav=''
+        for el in Pravila[key]:
+            sumbprav+=el
+        if N in sumbprav:
+            continue
+        else: return f'Проблема в {key}'
+
+        # for el_sumb in sumbprav:
+        #     for el_n in N:
+        #         if el_sumb!=el_n:
+
+
+
+
 
 
 
@@ -73,3 +99,4 @@ print('Грамматика: ')
 TN=Grammar(P)
 print('Проверка типа: ',Check(P,TN))
 print('Проверка на существование: ', Exist(P,TN))
+print('Проверка бесполезность: ', UnusualSumb(P,TN))
