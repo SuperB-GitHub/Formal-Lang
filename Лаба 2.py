@@ -63,24 +63,29 @@ def Exist(Pravila:dict,TN:list):
         else: return 'Язык не существует'
     return 'Язык существует'
 
-def UnusualSumb(Pravila:dict,TN:list):
+def DontGoSumb(Pravila:dict,TN:list):
     T=TN[0]
     N=TN[1]
-    for key in Pravila.keys():
-        if key == TN[2]:continue
-        sumbprav=''
-        for el in Pravila[key]:
-            sumbprav+=el
-        if N in sumbprav:
-            continue
-        else: return f'Проблема в {key}'
-
-        # for el_sumb in sumbprav:
-        #     for el_n in N:
-        #         if el_sumb!=el_n:
-
-
-
+    n=[TN[2]]
+    u=[]
+    for elem_n in n:
+        for elem in Pravila[elem_n]:
+            for elem_in_elem in elem:
+                if elem_in_elem not in n and elem_in_elem in T:
+                    n.append(elem_in_elem)
+                elif elem_in_elem not in u and elem_in_elem in N:
+                    u.append(elem_in_elem)
+    f_n=[] #Мн-во не достижимых терминалов
+    for elem in T:
+        if elem not in n:
+            f_n.append(elem)
+    f_u=[] #Мн-во не достижимых не терминалов
+    for elem in N:
+        if elem not in u:
+            f_u.append(elem)
+    for elem in f_n:
+        Pravila.pop(elem)
+    return Pravila
 
 
 
@@ -99,4 +104,4 @@ print('Грамматика: ')
 TN=Grammar(P)
 print('Проверка типа: ',Check(P,TN))
 print('Проверка на существование: ', Exist(P,TN))
-print('Проверка бесполезность: ', UnusualSumb(P,TN))
+print('Проверка бесполезность: ', DontGoSumb(P,TN))
