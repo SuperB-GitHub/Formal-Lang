@@ -85,8 +85,11 @@ def DontGoSumb(Pravila:dict,TN:list):
             f_u.append(elem)
     for elem in f_n:
         Pravila.pop(elem)
-    return Pravila
 
+    if f_n!=[]:
+        print(f'Недостижимые символы: {f_n} и {f_u}\nНовые правила:')
+        return Pravila
+    else: return f'Недостижимых символов нет'
 
 
 
@@ -104,4 +107,5 @@ print('Грамматика: ')
 TN=Grammar(P)
 print('Проверка типа: ',Check(P,TN))
 print('Проверка на существование: ', Exist(P,TN))
-print('Проверка бесполезность: ', DontGoSumb(P,TN))
+P=DontGoSumb(P,TN)
+print(P)
