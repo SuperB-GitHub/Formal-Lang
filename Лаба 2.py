@@ -63,6 +63,33 @@ def Exist(Pravila:dict,TN:list):
         else: return 'Язык не существует'
     return 'Язык существует'
 
+def DontGenSumb(Pravila:dict,TN:list):
+    T=TN[0]
+    N=TN[1]
+    t=[TN[2]]
+    n=['e']
+    n.extend(N)
+    for elem_t in t:
+        for elem in Pravila[elem_t]:
+            for elem_elem in elem:
+                if elem_elem not in t and elem_elem in T:
+                    t.append(elem_elem)
+    for elem_t in t:
+        for elem in Pravila[elem_t]:
+            check=[]
+            for elem_elem in elem:
+                if elem_elem in n:
+                    check.append(True)
+                else: check.append(False)
+            if False not in check and elem_t not in n:
+                n.append(elem_t)
+                t.pop(t.index(elem_t))
+    return t
+
+
+
+
+
 def DontGoSumb(Pravila:dict,TN:list):
     T=TN[0]
     N=TN[1]
@@ -109,3 +136,4 @@ print('Проверка типа: ',Check(P,TN))
 print('Проверка на существование: ', Exist(P,TN))
 P=DontGoSumb(P,TN)
 print(P)
+print(DontGenSumb(P,TN))
