@@ -74,21 +74,31 @@ def DontGenSumb(Pravila:dict,TN:list):
             for elem_elem in elem:
                 if elem_elem not in t and elem_elem in T:
                     t.append(elem_elem)
-    for elem_t in t:
-        for elem in Pravila[elem_t]:
-            check=[]
-            for elem_elem in elem:
-                if elem_elem in n:
-                    check.append(True)
-                else: check.append(False)
-            if False not in check and elem_t not in n:
-                n.append(elem_t)
-                t.pop(t.index(elem_t))
-    return t
+    while TN[2] in t:
+        for elem_t in t:
+            for elem in Pravila[elem_t]:
+                check=[]
+                for elem_elem in elem:
+                    if elem_elem in n:
+                        check.append(True)
+                    else: check.append(False)
+                if False not in check and elem_t not in n:
+                    n.append(elem_t)
+                    t.pop(t.index(elem_t))             
+    for fin_el in t:
+        for key in Pravila.keys():
+            Prav=[]
+            Prav.extend(Pravila[key])
+            if fin_el in Prav:
+                Prav.pop(Prav.index(fin_el))
+            Pravila[key]=Prav
+        Pravila.pop(fin_el)
 
 
-
-
+    if t!=[]:
+        print(f'\nНепорождающие терминалы: {t}\nНовые правила:')
+        return Pravila
+    else: return f'\nНепорождающих терминалов нет'
 
 def DontGoSumb(Pravila:dict,TN:list):
     T=TN[0]
@@ -114,9 +124,9 @@ def DontGoSumb(Pravila:dict,TN:list):
         Pravila.pop(elem)
 
     if f_n!=[]:
-        print(f'Недостижимые символы: {f_n} и {f_u}\nНовые правила:')
+        print(f'\nНедостижимые символы: {f_n} и {f_u}\nНовые правила:')
         return Pravila
-    else: return f'Недостижимых символов нет'
+    else: return f'\nНедостижимых символов нет'
 
 
 
@@ -134,6 +144,7 @@ print('Грамматика: ')
 TN=Grammar(P)
 print('Проверка типа: ',Check(P,TN))
 print('Проверка на существование: ', Exist(P,TN))
-P=DontGoSumb(P,TN)
-print(P)
+print(DontGoSumb(P,TN))
+TN=Grammar(P)
 print(DontGenSumb(P,TN))
+TN=Grammar(P)
