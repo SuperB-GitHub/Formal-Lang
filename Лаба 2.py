@@ -21,15 +21,15 @@ def Grammar (Pravila:dict):
     if 'e' in T:
         T.pop(T.index('e'))
     print(f'G = ({sorted(T)}, {sorted(N)}, P, {S})')
-    return [N,T,S]
+    return [T,N,S]
 
 def Check(Pravila:dict,TN:list):
     types={0:'Нулевой (Свободный)',
            1:'Контекстно-зависимый',
            2:'Контекстно-свободный',
            3:'Регулярный'}
-    N=TN[0]
-    T=TN[1]
+    T=TN[0]
+    N=TN[1]
     TN=N+T
     TN.append('e')
     typ=[]
@@ -51,8 +51,8 @@ def Check(Pravila:dict,TN:list):
     return types[min(typ)]
 
 def Exist(Pravila:dict,TN:list):
-    N=TN[0]
-    T=TN[1]
+    T=TN[0]
+    N=TN[1]
     for key in Pravila.keys():
         if key == TN[2]:continue
         check=[]
@@ -64,8 +64,8 @@ def Exist(Pravila:dict,TN:list):
     return 'Язык существует'
 
 def DontGenSumb(Pravila:dict,TN:list):
-    N=TN[0]
-    T=TN[1]
+    T=TN[0]
+    N=TN[1]
     t=[TN[2]]
     n=['e']
     n.extend(T)
@@ -101,8 +101,8 @@ def DontGenSumb(Pravila:dict,TN:list):
     else: return f'\nНепорождающих терминалов нет'
 
 def DontGoSumb(Pravila:dict,TN:list):
-    N=TN[0]
-    T=TN[1]
+    T=TN[0]
+    N=TN[1]
     n=[TN[2]]
     u=[]
     for elem_n in n:
@@ -129,6 +129,15 @@ def DontGoSumb(Pravila:dict,TN:list):
     else: return f'\nНедостижимых символов нет'
 
 def DelERule(Pravila:dict,TN:list):
+    T=TN[0]
+    N=TN[1]
+    E=list
+    u=1
+    while u==1:
+        for key in Pravila.keys():
+            for elem in Pravila[key]:
+                if elem == 'e' or elem in E:
+                    E.append(key)
     return
 
 P={}
