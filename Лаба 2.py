@@ -96,7 +96,7 @@ def DontGenSumb(Pravila:dict,TN:list):
 
 
     if t!=[]:
-        print(f'\nНепорождающие терминалы: {t}\nНовые правила:')
+        print(f'\nНепорождающие нетерминалы: {t}\nНовые правила:')
         return Pravila
     else: return f'\nНепорождающих терминалов нет'
 
@@ -131,14 +131,32 @@ def DontGoSumb(Pravila:dict,TN:list):
 def DelERule(Pravila:dict,TN:list):
     T=TN[0]
     N=TN[1]
-    E=list
-    u=1
-    while u==1:
+    E=[]
+    u=0
+    while u!=len(N):
         for key in Pravila.keys():
             for elem in Pravila[key]:
-                if elem == 'e' or elem in E:
+                if (elem == 'e' or elem in E) and key not in E:
                     E.append(key)
-    return
+        u+=1
+    
+    for eel in E:
+        temp=[]
+        temp0=[] #Для замены в правилах
+        temp.extend(Pravila[eel])
+        if 'e' in temp:
+            temp.remove('e')
+        for elem in temp:
+            temp2=[]
+            for elel in elem:
+                if elel in T:
+                    temp2.append(True)
+                else: temp2.append(False)
+        
+            
+
+    
+    return E
 
 P={}
 u=True
@@ -158,3 +176,4 @@ print(DontGenSumb(P,TN))
 TN=Grammar(P)
 print(DontGoSumb(P,TN))
 TN=Grammar(P)
+print(DelERule(P,TN))
