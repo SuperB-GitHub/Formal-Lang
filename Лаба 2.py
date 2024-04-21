@@ -146,12 +146,20 @@ def DelERule(Pravila:dict,TN:list):
         temp.extend(Pravila[eel])
         if 'e' in temp:
             temp.remove('e')
+
         for elem in temp:
             temp2=[]
             for elel in elem:
                 if elel in T:
                     temp2.append(True)
                 else: temp2.append(False)
+            print(temp2)
+            for i in range(temp2**2):
+                for j in range(temp2.count(False)):
+                    new=''
+                
+
+            print(temp0)
         
             
 
