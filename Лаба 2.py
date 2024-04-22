@@ -148,15 +148,25 @@ def DelERule(Pravila:dict,TN:list):
             temp.remove('e')
 
         for elem in temp:
-            temp2=[]
+            bool=[]
+            pieces=[]
             for elel in elem:
+                pieces.append(elel)
                 if elel in T:
-                    temp2.append(True)
-                else: temp2.append(False)
-            print(temp2)
-            for i in range(temp2**2):
-                for j in range(temp2.count(False)):
-                    new=''
+                    bool.append(True)
+                else: bool.append(False)
+            print(bool)
+            print(pieces)
+            for kol_f in range(1,bool.count(False)): #Разбор по кол-ву Т
+                for kol in range(bool.count(False)): #Разбор по кол-ву слов
+                    pieces.pop(bool.index(False,kol))
+                    pieces.remove(False)
+                    bool.index(False,kol)
+                    # temp0.append(pieces)
+                    # pieces.insert(bool.index(False,kol),False)
+
+
+
                 
 
             print(temp0)
