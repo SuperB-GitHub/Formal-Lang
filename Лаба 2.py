@@ -146,35 +146,59 @@ def DelERule(Pravila:dict,TN:list):
         temp.extend(Pravila[eel])
         if 'e' in temp:
             temp.remove('e')
+            Pravila[eel] = temp
 
         for elem in temp:
-            bool=[]
+            boole=[]
             pieces=[]
             for elel in elem:
                 pieces.append(elel)
                 if elel in T:
-                    bool.append(True)
-                else: bool.append(False)
-            print(bool)
-            print(pieces)
-            for kol_f in range(1,bool.count(False)): #Разбор по кол-ву Т
-                for kol in range(bool.count(False)): #Разбор по кол-ву слов
-                    pieces.pop(bool.index(False,kol))
-                    pieces.remove(False)
-                    bool.index(False,kol)
-                    # temp0.append(pieces)
-                    # pieces.insert(bool.index(False,kol),False)
+                    boole.append(True)
+                else: boole.append(False)
 
+            
+            if False not in boole:
+                continue
 
-
+            tab=TableOfTruth(boole.count(False))
+            for el in tab:
+                temp_index=[]
+                for b in range(len(boole)):
+                    if boole[b]==False:
+                        temp_index.append(b)
                 
+                pi2=[]
+                pi2.extend(pieces)
+                for i in range(len(temp_index)):
+                    nword=''
+                    if el[i]=='0':
+                        pi2[temp_index[i]]='e'
 
-            print(temp0)
+                for p in pi2:
+                    if p!='e':
+                        nword+=p
+                
+                temp0.append(nword)
+
+        for elem in temp0:
+            if elem=='':
+                temp0.pop(temp0.index(elem))                         
         
+        if temp0!=[]:
+            Pravila[eel]=temp0
             
 
-    
-    return E
+    if E!=[]:
+        print(f'\nНетерминалы с е-правилами: {E}\nНовые правила:')
+        return Pravila
+    else: return f'\nНетерминалов с e-правилами нет'
+
+def TableOfTruth(num:int):
+    tab=[]
+    for kol in range(2**num):
+        tab.append(list(bin(kol)[2:].zfill(num)))
+    return tab
 
 P={}
 u=True
