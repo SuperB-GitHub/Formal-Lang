@@ -136,8 +136,9 @@ def DelERule(Pravila:dict,TN:list):
     while u!=len(N):
         for key in Pravila.keys():
             for elem in Pravila[key]:
-                if (elem == 'e' or elem in E) and key not in E:
-                    E.append(key)
+                for elem_elem in elem:
+                    if (elem == 'e' or elem_elem in E) and key not in E:
+                        E.append(key)
         u+=1
     
     for eel in E:
@@ -157,7 +158,7 @@ def DelERule(Pravila:dict,TN:list):
                     boole.append(True)
                 else: boole.append(False)
 
-            
+            print(boole)
             if False not in boole:
                 continue
 
