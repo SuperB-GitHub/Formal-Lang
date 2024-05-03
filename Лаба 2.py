@@ -70,10 +70,11 @@ def DontGenSumb(Pravila:dict,TN:list):
     n=['e']
     n.extend(T)
     for elem_t in t:
-        for elem in Pravila[elem_t]:
-            for elem_elem in elem:
-                if elem_elem not in t and elem_elem in N:
-                    t.append(elem_elem)
+        if elem_t in Pravila.keys():
+            for elem in Pravila[elem_t]:
+                for elem_elem in elem:
+                    if elem_elem not in t and elem_elem in N:
+                        t.append(elem_elem)
     while TN[2] in t:
         for elem_t in t:
             for elem in Pravila[elem_t]:
@@ -89,8 +90,9 @@ def DontGenSumb(Pravila:dict,TN:list):
         for key in Pravila.keys():
             Prav=[]
             Prav.extend(Pravila[key])
-            if fin_el in Prav:
-                Prav.pop(Prav.index(fin_el))
+            for i in range(len(Prav)):
+                if fin_el in Prav[i]:
+                    Prav.pop()
             Pravila[key]=Prav
         Pravila.pop(fin_el)
 
@@ -100,18 +102,19 @@ def DontGenSumb(Pravila:dict,TN:list):
         return Pravila
     else: return f'\nНепорождающих терминалов нет'
 
-def DontGoSumb(Pravila:dict,TN:list):
+def DontGoSumb(Pravila:dict,TN:list,MB:bool):
     T=TN[0]
     N=TN[1]
     n=[TN[2]]
     u=[]
     for elem_n in n:
-        for elem in Pravila[elem_n]:
-            for elem_in_elem in elem:
-                if elem_in_elem not in n and elem_in_elem in N:
-                    n.append(elem_in_elem)
-                elif elem_in_elem not in u and elem_in_elem in T:
-                    u.append(elem_in_elem)
+        if elem_n in Pravila.keys():
+            for elem in Pravila[elem_n]:
+                for elem_in_elem in elem:
+                    if elem_in_elem not in n and elem_in_elem in N:
+                        n.append(elem_in_elem)
+                    elif elem_in_elem not in u and elem_in_elem in T:
+                        u.append(elem_in_elem)
     f_n=[] #Мн-во не достижимых терминалов
     for elem in N:
         if elem not in n:
@@ -123,8 +126,10 @@ def DontGoSumb(Pravila:dict,TN:list):
     for elem in f_n:
         Pravila.pop(elem)
 
-    if f_n!=[]:
+    if f_n!=[] and MB==True:
         print(f'\nНедостижимые символы: {f_n} и {f_u}\nНовые правила:')
+        return Pravila
+    elif f_n!=[] and MB==False:
         return Pravila
     else: return f'\nНедостижимых символов нет'
 
@@ -158,7 +163,6 @@ def DelERule(Pravila:dict,TN:list):
                     boole.append(True)
                 else: boole.append(False)
 
-            print(boole)
             if False not in boole:
                 continue
 
@@ -188,7 +192,7 @@ def DelERule(Pravila:dict,TN:list):
         
         if temp0!=[]:
             Pravila[eel]=temp0
-            
+      
 
     if E!=[]:
         print(f'\nНетерминалы с е-правилами: {E}\nНовые правила:')
@@ -200,6 +204,35 @@ def TableOfTruth(num:int):
     for kol in range(2**num):
         tab.append(list(bin(kol)[2:].zfill(num)))
     return tab
+
+def UnitRules(Pravila:dict,TN:list):
+    T=TN[0]
+    N=TN[1]
+    defect=[]
+    for key in Pravila.keys():
+        temp=[]
+        for rule in Pravila[key]:
+            if rule not in N:
+                temp.append(rule)
+            else:
+                defect.append(rule)
+                for another_rule in Pravila[rule]:
+                    temp.append(another_rule)
+        Pravila[key]=list(set(temp))
+                
+    if defect!=[]:
+        print(f'\nНетерминалы с цепным правилом: {defect}\nНовые правила:')
+        return Pravila
+    else: return f'\nНетерминалов с цепным правилом нет'
+
+# def LeftFact(Pravila:dict,TN:list):
+#     T=TN[0]
+#     N=TN[1]
+#     for key in Pravila.keys():
+#         for rule in Pravila[key]:
+            
+
+
 
 P={}
 u=True
@@ -217,6 +250,10 @@ print('Проверка типа: ',Check(P,TN))
 print('Проверка на существование: ', Exist(P,TN))
 print(DontGenSumb(P,TN))
 TN=Grammar(P)
-print(DontGoSumb(P,TN))
+print(DontGoSumb(P,TN,True))
 TN=Grammar(P)
 print(DelERule(P,TN))
+print(DontGoSumb(P,TN,False))
+TN=Grammar(P)
+print(UnitRules(P,TN))
+TN=Grammar(P)
