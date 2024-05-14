@@ -225,11 +225,49 @@ def UnitRules(Pravila:dict,TN:list):
         return Pravila
     else: return f'\nНетерминалов с цепным правилом нет'
 
-# def LeftFact(Pravila:dict,TN:list):
-#     T=TN[0]
-#     N=TN[1]
-#     for key in Pravila.keys():
-#         for rule in Pravila[key]:
+def LeftFact(Pravila:dict):
+    alph =["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    keys = list(Pravila)
+    strs=[]
+    for key in keys:
+        temp_key=[]
+        temp_nkey=[]
+        for sumb in alph:
+            if sumb not in Pravila.keys():
+                break
+        strr = None
+        for rule1 in Pravila[key]:
+            for rule2 in Pravila[key]:
+                if rule1 != rule2 and len(rule1)>1 and len(rule2)>1:
+                    count=0
+                    for i1 in range(len(min(rule1, rule2))-1):
+                        if rule1[i1] == rule2[i1]:
+                            count+=1
+                    if count>=1:
+                        strr = rule2[:count]
+
+        if strr!=None:
+            strs.append(strr)
+            count=len(strr)
+            for rule in Pravila[key]:
+                if strr in rule[:count]:
+                    temp_nkey.append(rule[count:])
+                else: temp_key.append(rule)
+            temp_key.append(strr+sumb)
+            Pravila[key]=temp_key
+            Pravila[sumb]=temp_nkey
+        
+    if strs!=None:
+        print(f'\nПовторяющиеся элементы: {strs}\nНовые правила:')
+        return Pravila
+    else: return f'\nПовторяющихся элементов нет'
+
+
+
+
+
+
+            
             
 
 
@@ -257,3 +295,14 @@ print(DontGoSumb(P,TN,False))
 TN=Grammar(P)
 print(UnitRules(P,TN))
 TN=Grammar(P)
+print(LeftFact(P))
+
+
+"""
+X Y,Y=Y,Y<Y,Y>Y,K
+Y Y^Z,Y#Z,e
+Z na,nb,e
+K nK
+L l,a,b
+
+"""
