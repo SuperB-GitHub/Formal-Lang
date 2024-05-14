@@ -28,8 +28,8 @@ def Check(Pravila:dict,TN:list):
            1:'Контекстно-зависимый',
            2:'Контекстно-свободный',
            3:'Регулярный'}
-    T=TN[0]
-    N=TN[1]
+    T=TN[1]
+    N=TN[0]
     TN=N+T
     TN.append('e')
     typ=[]
@@ -39,7 +39,7 @@ def Check(Pravila:dict,TN:list):
             if key in T and ((el[-1] in N and el[0] in T)  or (el[0] in N and el[-1] in T)):
                 typ.append(3)
                 break
-            elif key in N:
+            elif key in T:
                 for el_p in el:
                     if el_p in TN:
                         typ.append(2)
