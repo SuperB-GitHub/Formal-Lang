@@ -262,15 +262,33 @@ def LeftFact(Pravila:dict):
         return Pravila
     else: return f'\nПовторяющихся элементов нет'
 
-
-
-
-
-
-            
-            
-
-
+def LeftRecursion(Pravila: dict):
+    alph =["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+    keys = list(Pravila)
+    wrong=[]
+    for key in keys:
+        temp_key=[]
+        temp_nkey=[]
+        for sumb in alph:
+            if sumb not in Pravila.keys():
+                break
+        for rule in Pravila[key]:
+            if rule[0]==key:
+                wrong.append(rule)
+                temp_nkey.append(rule[1:]+sumb)
+                temp_nkey.append(rule[1:])
+                for rulei in Pravila[key]:
+                    if rulei!=rule:
+                        temp_key.append(rulei+sumb)
+            else:
+                temp_key.append(rule)
+        if temp_nkey!=[]:
+            Pravila[key]=temp_key
+            Pravila[sumb]=temp_nkey
+    if wrong!=[]:
+        print(f'\nПравила с левой рекурсией: {wrong}\nНовые правила:')
+        return Pravila
+    else: return f'\nПравил с левой рекурсией нет'
 
 P={}
 u=True
@@ -296,7 +314,12 @@ TN=Grammar(P)
 print(UnitRules(P,TN))
 TN=Grammar(P)
 print(LeftFact(P))
-
+TN=Grammar(P)
+print(LeftRecursion(P))
+TN=Grammar(P)
+print("\nФинальные правила имеют вид:")
+for key in P.keys():
+    print(f'{key} -> {P[key]}')
 
 """
 X Y,Y=Y,Y<Y,Y>Y,K
