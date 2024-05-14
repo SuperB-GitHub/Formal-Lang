@@ -328,4 +328,10 @@ Z na,nb,e
 K nK
 L l,a,b
 
+Y KS,KM
+K K*,K/,S
+S Sa/,Sb/,e
+M *M*
+L L^,^a
+
 """
