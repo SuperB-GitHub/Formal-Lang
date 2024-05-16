@@ -1,4 +1,6 @@
+from matplotlib import pyplot as plt
 from prettytable import PrettyTable
+import networkx as nx
 
 def Grammar (Pravila:dict):
     N=[]
@@ -62,17 +64,18 @@ def AddNewN(Pravila: dict,TN: list):
                 temp_key.append(rule+"N")
             temp_key.append(rule)
         Pravila[key]=temp_key
-    print(f'\nНовые правила:')
+    print(f'\nНовые правила после добавления N:')
     return Pravila
 
 def FuncTransit(Pravila:dict, N:str ,T:str):
     ans=[]
-    for rule in Pravila[N]:
-        if rule[0] == T and len(rule)==2:
-            ans.append(rule[1:])
-    if ans==[]:
-        return "Ø"
-    else: return ans
+    if N == "N":return "Ø"
+    else:
+        for rule in Pravila[N]:
+            if rule[0] == T and len(rule)==2:
+                ans.append(rule[1:])
+        if ans==[]: return "Ø"
+        else: return ans
 
 def TableFuncTrasnsit(Pravila:dict,TN: list):
     T = TN[0]
@@ -85,16 +88,150 @@ def TableFuncTrasnsit(Pravila:dict,TN: list):
     for row in T:
         row_names = [row]
         for column in N:
-            if column == "N":
-                row_names.append("Ø")
-            else:
-                row_names.append(FuncTransit(Pravila,column,row))
+            row_names.append(FuncTransit(Pravila,column,row))
         table.add_row(row_names)
     return table    
 
-# def
+def NotDetermGraph(Pravila:dict,TN: list):
+    G=nx.DiGraph()
+    T = TN[0]
+    N = TN[1]
+    G.add_nodes_from(N)
+    pos = nx.shell_layout(G)
+    for depart in N:
+        for edge in T:
+            arrival = FuncTransit(Pravila,depart,edge)
+            if arrival== "Ø": continue
+            else:
+                if type(arrival)==list:
+                    for el in arrival:
+                        G.add_edge(depart,el)
+                        nx.draw_networkx_edge_labels(G,pos,{(depart,el):edge},font_color="blue",verticalalignment="top",horizontalalignment="left",)
+    nx.draw(G, pos, with_labels = True)
+    plt.show()
+            
+def Parameters(Pravila:dict, TN:list): 
+    Q = TN[1] 
+    T = TN[0]
+    F = TableFuncTrasnsit(Pravila,TN) 
+    H = TN[2]
+    Z = []
+    for notterm in Q:
+        check=[]
+        for term in T:
+            check.append(FuncTransit(Pravila,notterm,term))
+        if check.count("Ø") == len(check):
+            Z.append(notterm)
+    if "e" in Pravila[H]:
+        Z.append(H)
+    print(f"""\nКонечный автомат M:\nQ = {Q} - Мн-во состояний автомата\nT = {T} - Мн-во входного алф\nF - Таблица функции переходов\n{F}\nH = {H} - Начальное состояние\nZ = {Z} - Мн-во заключительных состояний\n""")
+    return [Q,T,F,H,Z]
+
+def DictDKA(Pravila:dict,TN: list):
+    alph =["A","B","C","D","E","I","J","K","L","M","N","O","P","R","S","U","V","W","X","Y"]
+    T = TN[0]
+    N = TN[1]
+    dka={}
+    columns = []
+    columns.extend(N)
+    for column in columns:
+        column_names = []
+        for row in T:
+
+            #Сортировка если парное значение column
+            if len(column)>1:
+                el_names = [] #Значения отправляющиеся в словарь
+                for el in column:
+                    ft = FuncTransit(Pravila,el,row)
+
+                    #Добавление если с функции парное значение
+                    if len(ft)>1:
+                        for el_ft in ft:
+                            if el_ft not in el_names:
+                                el_names.append(el_ft)
+                    #Добавление если единичное значение
+                    elif ft[0] not in el_names:
+                        el_names.append(ft[0])
+                
+                #Отправление в словарный лист если парное значение
+                if len(el_names)>1: column_names.append(el_names)
+
+                #Отправление в словарный лист если одно значение
+                elif len(el_names)==1 and type(el_names[0])==list: column_names.append(el_names[0])
+
+                #Отправление в словарный лист если пустое мн и др.
+                else: column_names.append("".join(el_names))
+
+                #Отправление в columns для след разборов
+                if tuple(el_names) not in columns and "Ø" not in el_names:
+                    columns.append(tuple(el_names))
+
+            #Сортировка если единичное значение column
+            else:       
+                ft = FuncTransit(Pravila,column,row)
+
+                #Добавление если с функции парное значение
+                if len(ft)>1:
+                    column_names.append(ft) #В словарь
+                    columns.append(tuple(ft)) #Для след разборов
+
+                #Добавление если единичное значение
+                else:
+                    ft = "".join(ft)
+                    column_names.append(ft) #В словарь
+                    if ft not in columns and ft!="Ø":  
+                        columns.append(tuple(ft)) #Для след разбора
+        
+        #Внесение в словарь
+        dka[column]=column_names
+
+    #Создание словаря для замены
+    keys = list(dka)
+    zamena = {}
+    for key in keys:
+        for sumb in alph:
+            if sumb not in zamena.values() and sumb not in dka.keys():
+                break
+        if len(key)>1:
+            zamena[key]=sumb
+
+    #Замена двусоставных правил
+    for key in keys:
+        temp=[]
+        for rule in dka[key]:
+            if type(rule)==list: #Замена в правилах
+                if "Ø" in rule:
+                    rule.pop(rule.index("Ø"))
+                    temp.append("".join(rule))
+                else:
+                    temp.append(zamena[tuple(rule)])
+            else: temp.append(rule)
+        dka[key]=temp
+        if type(key) == tuple: #Замена в ключах
+            dka[zamena[key]]=dka[key]
+            del dka[key]
+    
+    zam = ""
+    for key in zamena.keys(): zam += f"{key} -> {zamena[key]}; "
+    print(f"Правила ДКА:\nЗамена: {zam}\nПри входных символах:\nT -> {T}")
+    for key in dka.keys(): print(f'{key} -> {dka[key]}')
+
+    return dka
+
+def DKAGraph(dka:dict,M:list):
+    G=nx.DiGraph()
+    G.add_nodes_from(list(dka))
+    pos = nx.spring_layout(G)
+    for depart in dka.keys():
+        for num_edge, arrival in enumerate(dka[depart]):
+            if arrival != "Ø":
+                G.add_edge(depart,arrival)
+                nx.draw_networkx_edge_labels(G,pos,{(depart,arrival):M[1][num_edge]},font_color="blue",verticalalignment="top",horizontalalignment="left")
+    nx.draw(G, pos, with_labels = True)
+    plt.show()
 
 
+    
 
 
 P={}
@@ -112,7 +249,10 @@ TN=Grammar(P)
 print('Проверка типа: ',Check(P,TN))
 print(AddNewN(P,TN))
 TN=Grammar(P)
-print(f"\nТаблица функции переходов:\n{TableFuncTrasnsit(P,TN)}\n")
+M=Parameters(P,TN)
+NotDetermGraph(P,TN)
+DKA = DictDKA(P,TN)
+DKAGraph(DKA,M)
 
 
 
