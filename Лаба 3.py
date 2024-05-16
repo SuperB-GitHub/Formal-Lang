@@ -226,7 +226,7 @@ def DKAGraph(dka:dict,M:list):
         for num_edge, arrival in enumerate(dka[depart]):
             if arrival != "Ø":
                 G.add_edge(depart,arrival)
-                nx.draw_networkx_edge_labels(G,pos,{(depart,arrival):M[1][num_edge]},font_color="blue",verticalalignment="top",horizontalalignment="left")
+                nx.draw_networkx_edge_labels(G,pos,{(depart,arrival):M[1][num_edge]},font_color="blue")
     nx.draw(G, pos, with_labels = True)
     plt.show()
 
