@@ -96,18 +96,18 @@ def NotDetermGraph(Pravila:dict,TN: list):
     G=nx.DiGraph()
     T = TN[0]
     N = TN[1]
-    G.add_nodes_from(N)
-    pos = nx.shell_layout(G)
+    edge_labels={}
     for depart in N:
         for edge in T:
             arrival = FuncTransit(Pravila,depart,edge)
-            if arrival== "Ø": continue
-            else:
-                if type(arrival)==list:
-                    for el in arrival:
-                        G.add_edge(depart,el)
-                        nx.draw_networkx_edge_labels(G,pos,{(depart,el):edge},font_color="blue",verticalalignment="top",horizontalalignment="left",)
+            if type(arrival)==list:
+                for el in arrival:
+                    edge_labels[(depart,el)]=edge
+    G.add_edges_from(edge_labels.keys())
+    plt.figure(figsize=(12, 8))
+    pos = nx.spring_layout(G)
     nx.draw(G, pos, with_labels = True)
+    nx.draw_networkx_edge_labels(G,pos,edge_labels=edge_labels,font_color="blue")
     plt.show()
             
 def Parameters(Pravila:dict, TN:list): 
@@ -220,14 +220,16 @@ def DictDKA(Pravila:dict,TN: list):
 
 def DKAGraph(dka:dict,M:list):
     G=nx.DiGraph()
-    G.add_nodes_from(list(dka))
-    pos = nx.spring_layout(G)
+    edge_labels={}
     for depart in dka.keys():
         for num_edge, arrival in enumerate(dka[depart]):
             if arrival != "Ø":
-                G.add_edge(depart,arrival)
-                nx.draw_networkx_edge_labels(G,pos,{(depart,arrival):M[1][num_edge]},font_color="blue")
+                edge_labels[(depart,arrival)]=M[1][num_edge]
+    G.add_edges_from(edge_labels.keys())
+    plt.figure(figsize=(12, 8))
+    pos = nx.spring_layout(G)
     nx.draw(G, pos, with_labels = True)
+    nx.draw_networkx_edge_labels(G,pos,edge_labels,font_color="blue")
     plt.show()
 
 
